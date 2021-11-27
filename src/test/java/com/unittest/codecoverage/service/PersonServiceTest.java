@@ -1,7 +1,9 @@
 package com.unittest.codecoverage.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -97,4 +99,26 @@ public class PersonServiceTest {
 			.hasMessage(expectedMessage);
 	}
 
+	@Test
+	public void testGet_shouldGetPersonWithSuccessWhenNameIsCorrect() {
+		Person person = new Person();
+		person.setName("Name");
+		person.setAge(21);
+		person.setGender(Gender.M);
+
+		when(repository.get(eq("Name"))).thenReturn(person);
+
+		service.get("Name");
+	}
+
+	@Test
+	public void testGet_shouldThrowPersonExceptionWhenNameIsNull() {
+		List<String> expectedErrors = Lists.newArrayList("Name is required");
+		String expectedMessage = "Name is required";
+
+		assertThatThrownBy(() -> service.get(null))
+				.isInstanceOf(PersonException.class)
+				.hasFieldOrPropertyWithValue("errors", expectedErrors)
+				.hasMessage(expectedMessage);
+	}
 }
